@@ -1,4 +1,4 @@
-module standup-cli
+module auto-standup
 
 go 1.17
 

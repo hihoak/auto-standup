@@ -1,7 +1,7 @@
 package main
 
 import (
-	"standup-cli/cmd"
+	"auto-standup/cmd"
 )
 
 func main()  {

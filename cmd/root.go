@@ -1,10 +1,10 @@
 package cmd
 
 import (
+	"auto-standup/pkg/utils"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
-	"standup-cli/pkg/utils"
 )
 
 var (
