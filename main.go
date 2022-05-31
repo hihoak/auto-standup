@@ -1,7 +1,7 @@
 package main
 
 import (
-	"auto-standup/cmd"
+	"github.com/hihoak/auto-standup/cmd"
 )
 
 func main()  {

@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"auto-standup/pkg/utils"
+	"github.com/hihoak/auto-standup/pkg/utils"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"

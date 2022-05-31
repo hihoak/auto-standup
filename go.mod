@@ -1,4 +1,4 @@
-module auto-standup
+module github.com/hihoak/auto-standup
 
 go 1.17
 
