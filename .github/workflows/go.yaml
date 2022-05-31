@@ -25,14 +25,14 @@ jobs:
 
       - name: Build
         if: ${{ matrix.os != 'windows-latest' }}
-        run: mkdir auto-standup && go build -o auto-standup -v ./...
+        run: mkdir auto-standup-${{ matrix.os }} && go build -o auto-standup-${{ matrix.os }} -v ./...
 
       - name: Test
         run: go test -v ./...
 
       - name: Zip artifact
         if: ${{ matrix.os != 'windows-latest' }}
-        run: zip auto-standup-${{ matrix.os }}.zip ./auto-standup -r
+        run: zip auto-standup-${{ matrix.os }}.zip ./auto-standup-${{ matrix.os }} -r
 
       - name: Upload
         uses: actions/upload-artifact@v3
