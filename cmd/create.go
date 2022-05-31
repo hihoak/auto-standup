@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/andygrunwald/go-jira"
 	"github.com/spf13/cobra"
-	"standup-cli/internal/clients/jirer"
-	"standup-cli/pkg/utils"
+	"auto-standup/internal/clients/jirer"
+	"auto-standup/pkg/utils"
 )
 
 var (

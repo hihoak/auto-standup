@@ -3,7 +3,7 @@ package jirer
 import (
 	"fmt"
 	"github.com/andygrunwald/go-jira"
-	"standup-cli/pkg/utils"
+	"auto-standup/pkg/utils"
 	"strings"
 )
 
