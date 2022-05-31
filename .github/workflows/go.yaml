@@ -51,13 +51,13 @@ jobs:
         with:
           name: auto-standup-ubuntu-latest
       - name: Zip artifact
-        run: zip auto-standup-ubuntu-latest.zip auto-standup-ubuntu-latest
+        run: zip auto-standup-ubuntu-latest.zip auto-standup && rm auto-standup
       - name: Download macos artifact
         uses: actions/download-artifact@v3
         with:
           name: auto-standup-macos-latest
       - name: Zip artifact
-        run: zip auto-standup-macos-latest.zip auto-standup-macos-latest
+        run: zip auto-standup-macos-latest.zip auto-standup && rm auto-standup
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
