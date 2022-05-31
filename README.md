@@ -4,7 +4,9 @@ Automates your standup report
 ## Как пользоваться?
 1. установить утилитку одним из удобных способов
     
-* `go install https://github.com/hihoak/auto-standup`
+* `go install github.com/hihoak/auto-standup`
+* собрать локально, скрипт положит бинарь в $GOPATH/bin/auto-standup `make build_{arm|amd|win}`
+* скачать бинарь с тэга
 
 2. Настройка. Тут два варианта:
 * Создать конфигурационный файл `.standup.yaml`. По умолчанию утилитка ищет его по пути `$HOME/.standup.yaml` или передавать флагом `--config-path "/path/to/my/config.yaml"`

@@ -54,9 +54,6 @@ func (j *Jira) IssuesToStr(issues []*jira.Issue) string {
 }
 
 func (j *Jira) GetIssuesFromLastWorkDay(cfg *utils.Config) ([]*jira.Issue, error) {
-	// to delete
-	cfg.NumberOfDaysForGetTickets = 5
-	// to delete
 	jql := fmt.Sprintf("updatedDate >= \"-%dd\" AND assignee = %s", cfg.NumberOfDaysForGetTickets, cfg.Username)
 	utils.Log.Debug().Msgf("Searching tickets with following JQL %s", jql)
 	issuesFromLastWorkDay, _, err := j.client.Issue.Search(jql, &jira.SearchOptions{Expand: "changelog"})
