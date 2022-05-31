@@ -24,6 +24,7 @@ jobs:
           go-version: 1.17
 
       - name: Build
+        if: ${{ matrix.os != 'windows-latest' }}
         run: mkdir auto-standup && go build -o auto-standup -v ./...
 
       - name: Test
@@ -38,13 +39,6 @@ jobs:
         with:
           name: auto-standup-${{ matrix.os }}
           path: auto-standup-${{ matrix.os }}.zip
-
-#      - name: Upload Windows
-#        uses: actions/upload-artifact@v3
-#        if: ${{ matrix.os == 'windows-latest' }}
-#        with:
-#          name: build-artifact.${{ matrix.os }}.zip
-#          path: auto-standup.${{ matrix.os }}\auto-standup
 
   release:
     runs-on: ubuntu-latest
