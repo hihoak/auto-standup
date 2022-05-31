@@ -41,3 +41,19 @@ password: Mysecuresuperadminpass!
 * [RE-1000](https://jira.example.com/browse/RE-1000) - Сделать программку автоматизации отчета
 * [RE-2000](https://jira.example.com/browse/RE-2000) - Протестировать программку)
 ```
+
+## Контакты и полезные ссылки
+
+* Борда с тикетами, куда вы можете добавить фичу, чтобы ее реализовали [![Trello board](https://upload.wikimedia.org/wikipedia/en/8/8c/Trello_logo.svg)](https://trello.com/b/OxH7R79n/auto-standup-board)
+
+### Author
+<table>
+<tr>
+  <td align="right"><a href="https://github.com/hihoak"><img src="https://github.com/hihoak.png" width="100px;" alt=""/><br /><sub><b>Mihaylov Artem</b></sub></a></td>
+</tr>
+</table>
+
+[![Telegram url](https://icons.iconarchive.com/icons/alecive/flatwoken/48/Apps-Telegram-icon.png)](https://t.me/ez_buckets)
+
+### Contributors
+Пока, что совсем никого :(
