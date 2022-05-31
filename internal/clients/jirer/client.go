@@ -38,7 +38,7 @@ func (j *Jira) FromStrKeysToIssues(issueKeys []string) ([]*jira.Issue, error) {
 			utils.Log.Debug().Err(err).Msgf("Can't get issue %s", key)
 			return nil, fmt.Errorf("can't get issue %s. error: %w", key, err)
 		}
-		utils.Log.Debug().Msgf("Got issue %w", issue)
+		utils.Log.Debug().Msgf("Got issue %v", issue)
 		issues = append(issues, issue)
 	}
 	utils.Log.Debug().Msgf("Got following issues: %v", issues)
