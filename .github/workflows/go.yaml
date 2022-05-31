@@ -24,7 +24,7 @@ jobs:
           go-version: 1.17
 
       - name: Build
-        run: mkdir ~/auto-standup.${{ matrix.os }} && go build -o ~/auto-standup.${{ matrix.os }} -v ./...
+        run: mkdir auto-standup.${{ matrix.os }} && go build -o auto-standup.${{ matrix.os }} -v ./...
 
       - name: Test
         run: go test -v ./...
@@ -32,4 +32,4 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: build-artifact.${{ matrix.os }}
-          path: ~/auto-standup.${{ matrix.os }}/auto-standup.${{ matrix.os }}
+          path: auto-standup.${{ matrix.os }}/auto-standup
