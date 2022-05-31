@@ -31,14 +31,14 @@ jobs:
 
       - name: Upload
         uses: actions/upload-artifact@v3
-        if: ${{ os != 'windows-latest' }}
+        if: ${{ matrix.os != 'windows-latest' }}
         with:
           name: build-artifact.${{ matrix.os }}
           path: auto-standup.${{ matrix.os }}/auto-standup
 
       - name: Upload Windows
         uses: actions/upload-artifact@v3
-        if: ${{ os == 'windows-latest' }}
+        if: ${{ matrix.os == 'windows-latest' }}
         with:
           name: build-artifact.${{ matrix.os }}
           path: auto-standup.${{ matrix.os }}\auto-standup
