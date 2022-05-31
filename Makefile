@@ -1,3 +1,3 @@
 .Phony: build
 build:
-	go build -o ${GOPATH}/bin/standup main.go
+	go build -o ${GOPATH}/bin/auto-standup main.go

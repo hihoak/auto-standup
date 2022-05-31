@@ -39,7 +39,6 @@ func init() {
 
 func initUtils() {
 	utils.Log = utils.NewLogger(logLevel)
-	fmt.Println(logLevel)
 	utils.Log.Debug().Msg("Successfully initialize logger...")
 }
 
