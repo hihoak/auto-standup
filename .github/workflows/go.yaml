@@ -62,6 +62,8 @@ jobs:
         with:
           name: auto-standup-ubuntu-latest
       - name: Zip artifact
+        run: pwd && ls -la
+      - name: Zip artifact
         run: zip auto-standup-ubuntu-latest.zip auto-standup && rm auto-standup && ls -la
       - name: Download macos artifact
         uses: actions/download-artifact@v3
