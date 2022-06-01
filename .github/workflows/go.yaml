@@ -11,6 +11,7 @@ on:
 
 jobs:
   build_windows:
+    continue-on-error: true
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -59,7 +60,7 @@ jobs:
       - name: Download linux artifact
         uses: actions/download-artifact@v3
         with:
-          name: auto-standup-ubuntu-latest && ls -la
+          name: auto-standup-ubuntu-latest
       - name: Zip artifact
         run: zip auto-standup-ubuntu-latest.zip auto-standup && rm auto-standup && ls -la
       - name: Download macos artifact
