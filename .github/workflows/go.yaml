@@ -61,20 +61,18 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: auto-standup-ubuntu-latest
-      - name: Zip artifact
+      - name: Debug step
         run: pwd && ls -la
-      - name: Zip artifact
-        run: zip auto-standup-ubuntu-latest.zip auto-standup && rm auto-standup && ls -la
       - name: Download macos artifact
         uses: actions/download-artifact@v3
         with:
           name: auto-standup-macos-latest
-      - name: Zip artifact
-        run: zip auto-standup-macos-latest.zip auto-standup && rm auto-standup
+      - name: Debug step
+        run: pwd && ls -la
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           # TODO: add windows zip archive
           files: |
-            auto-standup.ubuntu-latest.zip
-            auto-standup.macos-latest.zip
+            auto-standup-ubuntu-latest.zip
+            auto-standup-macos-latest.zip
