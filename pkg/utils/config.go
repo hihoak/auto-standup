@@ -46,7 +46,7 @@ func NewConfig(path string) (*Config, error) {
 	}
 	// fill empty fields of config if found any
 	cfg.fillEmptyFields()
-	Log.Debug().Msgf("Successfully create config %w", cfg)
+	Log.Debug().Msgf("Successfully create config %v", cfg)
 	return &cfg, nil
 }
 
