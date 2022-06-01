@@ -25,14 +25,14 @@ jobs:
 
       - name: Build
         if: ${{ matrix.os != 'windows-latest' }}
-        run: go build -o auto-standup-${{ matrix.os }} main.go
+        run: go build -o auto-standup-${{ matrix.os }} main.go && ls -la
 
       - name: Test
         run: go test -v ./...
 
       - name: Zip artifact
         if: ${{ matrix.os != 'windows-latest' }}
-        run: zip auto-standup-${{ matrix.os }}.zip auto-standup-${{ matrix.os }}
+        run: zip auto-standup-${{ matrix.os }}.zip auto-standup-${{ matrix.os }} && ls -la
 
       - name: Upload
         uses: actions/upload-artifact@v3
@@ -49,9 +49,9 @@ jobs:
       - name: Download linux artifact
         uses: actions/download-artifact@v3
         with:
-          name: auto-standup-ubuntu-latest
+          name: auto-standup-ubuntu-latest && ls -la
       - name: Zip artifact
-        run: zip auto-standup-ubuntu-latest.zip auto-standup && rm auto-standup
+        run: zip auto-standup-ubuntu-latest.zip auto-standup && rm auto-standup && ls -la
       - name: Download macos artifact
         uses: actions/download-artifact@v3
         with:
