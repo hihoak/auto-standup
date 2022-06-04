@@ -10,24 +10,26 @@ on:
   pull_request:
 
 jobs:
-  build_windows:
+  build_tests_windows:
+    name: windows build and tests
     continue-on-error: true
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@3
         with:
-          go-version: 1.17
+          go-version: 1.18
 
       - name: Test
         run: go test -v ./...
 
-  build:
+      - name: Build
+        run: go build -v ./...
+
+  tests:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ ubuntu-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -35,16 +37,26 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.17
+          go-version: 1.18
+
+  build:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
 
       - name: Build
-        run: go build -o auto-standup-${{ matrix.os }} main.go && ls -la
-
-      - name: Test
-        run: go test -v ./...
+        run: go build -o auto-standup-${{ matrix.os }} main.go
 
       - name: Zip artifact
-        run: zip auto-standup-${{ matrix.os }}.zip auto-standup-${{ matrix.os }} && ls -la
+        run: zip auto-standup-${{ matrix.os }}.zip auto-standup-${{ matrix.os }}
 
       - name: Upload
         uses: actions/upload-artifact@v3
@@ -52,27 +64,36 @@ jobs:
           name: auto-standup-${{ matrix.os }}
           path: auto-standup-${{ matrix.os }}.zip
 
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.17
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: 'latest'
+
   release:
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
-    needs: [build]
+    needs: [build, tests, golangci]
     steps:
       - name: Download linux artifact
         uses: actions/download-artifact@v3
         with:
           name: auto-standup-ubuntu-latest
-      - name: Debug step
-        run: pwd && ls -la
       - name: Download macos artifact
         uses: actions/download-artifact@v3
         with:
           name: auto-standup-macos-latest
-      - name: Debug step
-        run: pwd && ls -la
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          # TODO: add windows zip archive
+          # TODO: add windows zip archive https://trello.com/c/uD6K0WNJ
           files: |
             auto-standup-ubuntu-latest.zip
             auto-standup-macos-latest.zip

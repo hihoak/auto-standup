@@ -44,7 +44,7 @@ password: Mysecuresuperadminpass!
 
 ## Контакты и полезные ссылки
 
-* Борда с тикетами, куда вы можете добавить фичу, чтобы ее реализовали [![Trello board](https://upload.wikimedia.org/wikipedia/en/8/8c/Trello_logo.svg)](https://trello.com/b/OxH7R79n/auto-standup-board)
+* Борда с тикетами, куда вы можете добавить фичу, чтобы ее реализовали или взять любой из тикетов и помочь развитию утилитки [![Trello board](https://upload.wikimedia.org/wikipedia/en/8/8c/Trello_logo.svg)](https://trello.com/b/OxH7R79n/auto-standup-board)
 
 ### Author
 <table>
