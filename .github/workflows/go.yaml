@@ -3,9 +3,9 @@ name: Go
 on:
   push:
     tags:
-      - v*
+      - v**
     branches:
-      - .*
+      - .**
   pull_request:
 
 jobs:
