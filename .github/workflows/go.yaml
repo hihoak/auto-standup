@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@3
+        uses: actions/setup-go@v3
         with:
           go-version: 1.18
 
@@ -32,7 +32,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, macos-latest ]
     env:
-      COVERAGE_OUTPUT_FILE: "coverage.out"
+      COVERAGE_OUTPUT_FILE: "coverage.txt"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -47,11 +47,12 @@ jobs:
           go test -v ./... -covermode=count -coverprofile=${COVERAGE_OUTPUT_FILE}
           go tool cover -func=${COVERAGE_OUTPUT_FILE} -o=${COVERAGE_OUTPUT_FILE}
 
-      - name: Upload
-        uses: actions/upload-artifact@v3
+      - uses: codecov/codecov-action@v2
         with:
-          name: coverage
-          path: ${{ env.COVERAGE_OUTPUT_FILE }}
+          files: $ {{ env.COVERAGE_OUTPUT_FILE }}
+          flags: unittests
+          name: codecoverage
+          verbose: true
 
   build:
     strategy:
