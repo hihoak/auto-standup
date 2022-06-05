@@ -1,3 +1,4 @@
+[![Go](https://github.com/hihoak/auto-standup/actions/workflows/go.yaml/badge.svg)](https://github.com/hihoak/auto-standup/actions/workflows/go.yaml)
 # standup-generator
 Automates your standup report
 
