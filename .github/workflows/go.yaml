@@ -14,6 +14,8 @@ jobs:
     continue-on-error: true
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v3
+
       - name: Set up Go
         uses: actions/setup-go@3
         with:
@@ -49,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: coverage
-          path: ${COVERAGE_OUTPUT_FILE}
+          path: ${{ env.COVERAGE_OUTPUT_FILE }}
 
   build:
     strategy:
