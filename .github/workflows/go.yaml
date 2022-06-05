@@ -6,6 +6,7 @@ on:
       - v**
     branches:
       - feature/**
+      - main
   pull_request:
 
 jobs:
