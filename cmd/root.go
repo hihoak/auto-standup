@@ -1,13 +1,17 @@
 package cmd
 
 import (
-	"github.com/hihoak/auto-standup/pkg/utils"
 	"fmt"
+	"github.com/hihoak/auto-standup/internal"
+	"github.com/hihoak/auto-standup/internal/clients/jirer"
+	"github.com/hihoak/auto-standup/internal/filters"
+	"github.com/hihoak/auto-standup/pkg/utils"
 	"github.com/spf13/cobra"
 	"os"
 )
 
 var (
+	impl *internal.Implementator
 	logLevel string
 	configPath string
 
@@ -29,7 +33,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initUtils, initConfig)
+	cobra.OnInitialize(initUtils, initConfig, initImplementator)
 	rootCmd.PersistentFlags().StringVarP(&logLevel, "log-level", "l", "info", "setting log level for cli. Options: 'debug', 'info'")
 	rootCmd.PersistentFlags().StringVarP(&configPath, "config-path", "c", "", "path to your config file in YAML format (default is $HOME/.standup.yaml)")
 
@@ -60,4 +64,15 @@ func initConfig() {
 		utils.Log.Fatal().Err(err).Msg("failed to init config. Create it in $HOME/.standup.yaml or supply flags")
 		return
 	}
+}
+
+func initImplementator() {
+	utils.Log.Debug().Msg("Initializing Jira client...")
+	jiraClient, err := jirer.New(utils.Cfg.Username, utils.Cfg.Password)
+	if err != nil {
+		utils.Log.Fatal().Err(err).Msg("got error while creating Jira client")
+	}
+	utils.Log.Debug().Msg("Successfully initialize Jira client!")
+
+	impl = internal.NewImplementator(jiraClient, &filters.Filters{})
 }
