@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
 	"github.com/spf13/cobra"
@@ -13,9 +14,9 @@ var (
 	toDoTickets []string
 
 	createCmd = &cobra.Command{
-		Use: "create --log-level \"info\" --done \"RE-1000,RE-2000\" --todo \"RE-3000,RE-4000\"",
+		Use:   "create --log-level \"info\" --done \"RE-1000,RE-2000\" --todo \"RE-3000,RE-4000\"",
 		Short: "creating standup message",
-		Run: create,
+		Run:   create,
 	}
 )
 

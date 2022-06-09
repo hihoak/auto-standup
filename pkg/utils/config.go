@@ -1,17 +1,21 @@
 package utils
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 var (
+	// Cfg ...
 	Cfg *Config
 )
 
+// Config - ...
 type Config struct {
 	// Username - Jira username for authentication
 	Username string `yaml:"username"`
@@ -28,15 +32,16 @@ type Config struct {
 	NumberOfDaysForGetTickets int
 }
 
+// NewConfig - ...
 func NewConfig(path string) (*Config, error) {
-	file, err := ioutil.ReadFile(path)
+	file, err := ioutil.ReadFile(filepath.Clean(path))
 	if err != nil {
 		Log.Debug().Err(err).Msgf("Can't open file %s", path)
 		return nil, err
 	}
 	nowTime := time.Now().UTC()
 	cfg := Config{
-		CmdStartTime: nowTime,
+		CmdStartTime:              nowTime,
 		NumberOfDaysForGetTickets: getNumberOfDaysForGetTickets(nowTime),
 	}
 	err = yaml.Unmarshal(file, &cfg)
@@ -72,7 +77,7 @@ func getNumberOfDaysForGetTickets(cmdStartTime time.Time) int {
 	if cmdStartTime.Weekday() == time.Monday {
 		numberOfDaysForGetTickets += 2
 	} else if cmdStartTime.Weekday() == time.Sunday {
-		numberOfDaysForGetTickets += 1
+		numberOfDaysForGetTickets++
 	}
 
 	return numberOfDaysForGetTickets

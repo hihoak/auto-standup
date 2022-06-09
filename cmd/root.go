@@ -2,29 +2,31 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/hihoak/auto-standup/internal"
 	"github.com/hihoak/auto-standup/internal/clients/jirer"
 	"github.com/hihoak/auto-standup/internal/filters"
 	"github.com/hihoak/auto-standup/pkg/utils"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var (
-	impl *internal.Implementator
-	logLevel string
+	impl       *internal.Implementator
+	logLevel   string
 	configPath string
 
 	username string
 	password string
 
 	rootCmd = &cobra.Command{
-		Use:   "standup [--log-level 'info']",
-		Short: "cli for generating standup message",
+		Use:              "standup [--log-level 'info']",
+		Short:            "cli for generating standup message",
 		TraverseChildren: true,
 	}
 )
 
+// Execute - ...
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
