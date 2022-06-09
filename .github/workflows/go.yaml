@@ -34,6 +34,7 @@ jobs:
         os: [ ubuntu-latest, macos-latest ]
     env:
       COVERAGE_OUTPUT_FILE: "coverage.txt"
+      CODECOV_TOKEN: '4586fd5f-7660-41ab-a23b-785877a60285'
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
@@ -45,7 +46,7 @@ jobs:
 
       - name: Run Test
         run: |
-          go test -v ./... -covermode=count -coverprofile=${COVERAGE_OUTPUT_FILE}
+          go test -v ./... -race -covermode=count -coverprofile=${COVERAGE_OUTPUT_FILE}
           go tool cover -func=${COVERAGE_OUTPUT_FILE} -o=${COVERAGE_OUTPUT_FILE}
 
       - uses: codecov/codecov-action@v2
