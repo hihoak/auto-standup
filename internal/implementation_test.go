@@ -1,18 +1,18 @@
-package tests
+package internal
 
 import (
 	"context"
 	"fmt"
-	"github.com/andygrunwald/go-jira"
-	"github.com/golang/mock/gomock"
-	"github.com/hihoak/auto-standup/internal"
-	"github.com/hihoak/auto-standup/pkg/utils"
-	"github.com/hihoak/auto-standup/test"
 	"strings"
 	"testing"
+
+	"github.com/andygrunwald/go-jira"
+	"github.com/golang/mock/gomock"
+	"github.com/hihoak/auto-standup/pkg/utils"
+	"github.com/hihoak/auto-standup/test"
 )
 
-func TestFromStrKeysToIssues(t *testing.T)  {
+func TestFromStrKeysToIssues(t *testing.T) {
 	t.Parallel()
 	mc := gomock.NewController(t)
 
@@ -35,12 +35,12 @@ func TestFromStrKeysToIssues(t *testing.T)  {
 			FuncArguments: []interface{}{
 				testIssuesKeys,
 			},
-			ExpectedError: fmt.Errorf("can't get issue %s. error: %w", testIssueKey, test.TestError),
-			Setup: func() (*internal.Implementator, *utils.Config) {
+			ExpectedError: fmt.Errorf("can't get issue %s. error: %w", testIssueKey, test.ErrorTest),
+			Setup: func() (*test.MockClients, *utils.Config) {
 				mockClients := test.InitDefaultMockClients(mc)
 				mockClients.JiraMockClient.EXPECT().GetIssue(gomock.Any(), gomock.Any()).
-					Return(nil, nil, test.TestError)
-				return test.InitTestImplementator(mockClients), nil
+					Return(nil, nil, test.ErrorTest)
+				return mockClients, nil
 			},
 		},
 		{
@@ -48,14 +48,14 @@ func TestFromStrKeysToIssues(t *testing.T)  {
 			FuncArguments: []interface{}{
 				testIssuesKeys,
 			},
-			ExpectedError: fmt.Errorf("can't get issue %s. error: %w", testIssueKey1, test.TestError),
-			Setup: func() (*internal.Implementator, *utils.Config) {
+			ExpectedError: fmt.Errorf("can't get issue %s. error: %w", testIssueKey1, test.ErrorTest),
+			Setup: func() (*test.MockClients, *utils.Config) {
 				mockClients := test.InitDefaultMockClients(mc)
 				mockClients.JiraMockClient.EXPECT().GetIssue(gomock.Any(), gomock.Any()).
 					Return(testIssues[0], nil, nil)
 				mockClients.JiraMockClient.EXPECT().GetIssue(gomock.Any(), gomock.Any()).
-					Return(nil, nil, test.TestError)
-				return test.InitTestImplementator(mockClients), nil
+					Return(nil, nil, test.ErrorTest)
+				return mockClients, nil
 			},
 		},
 		{
@@ -64,13 +64,13 @@ func TestFromStrKeysToIssues(t *testing.T)  {
 				testIssuesKeys,
 			},
 			ExpectedResult: testIssues,
-			Setup: func() (*internal.Implementator, *utils.Config) {
+			Setup: func() (*test.MockClients, *utils.Config) {
 				mockClients := test.InitDefaultMockClients(mc)
 				for _, issue := range testIssues {
 					mockClients.JiraMockClient.EXPECT().GetIssue(gomock.Any(), gomock.Any()).
 						Return(issue, nil, nil)
 				}
-				return test.InitTestImplementator(mockClients), nil
+				return mockClients, nil
 			},
 		},
 	}
@@ -78,7 +78,8 @@ func TestFromStrKeysToIssues(t *testing.T)  {
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
-			impl, _ := tc.Setup()
+			mockClients, _ := tc.Setup()
+			impl := InitTestImplementator(mockClients)
 			res, err := impl.FromStrKeysToIssues(context.Background(), tc.FuncArguments[0].([]string))
 			tc.CheckCase(t, res, err)
 		})
@@ -91,7 +92,7 @@ func TestGetIssuesFromLastWorkDay(t *testing.T) {
 
 	cfg := &utils.Config{
 		NumberOfDaysForGetTickets: 1,
-		Username: "test user",
+		Username:                  "test user",
 	}
 
 	validIssues := []*jira.Issue{
@@ -110,17 +111,17 @@ func TestGetIssuesFromLastWorkDay(t *testing.T) {
 	cases := []test.Case{
 		{
 			Name: "Error. Failed to search issues",
-			Setup: func() (*internal.Implementator, *utils.Config) {
+			Setup: func() (*test.MockClients, *utils.Config) {
 				mockClients := test.InitDefaultMockClients(mc)
 				mockClients.JiraMockClient.EXPECT().SearchIssue(gomock.Any(), gomock.Any()).
-					Return(nil, nil, test.TestError)
-				return test.InitTestImplementator(mockClients), cfg
+					Return(nil, nil, test.ErrorTest)
+				return mockClients, cfg
 			},
-			ExpectedError: test.TestError,
+			ExpectedError: test.ErrorTest,
 		},
 		{
 			Name: "Success. Got some issues from search and filter them",
-			Setup: func() (*internal.Implementator, *utils.Config) {
+			Setup: func() (*test.MockClients, *utils.Config) {
 				mockClients := test.InitDefaultMockClients(mc)
 				mockClients.JiraMockClient.EXPECT().SearchIssue(gomock.Any(), gomock.Any()).
 					Return(testIssues, nil, nil)
@@ -137,7 +138,7 @@ func TestGetIssuesFromLastWorkDay(t *testing.T) {
 						mockClients.FiltersMock.EXPECT().FilterIssueByActivity(gomock.Any(), gomock.Any()).Return(true)
 					}
 				}
-				return test.InitTestImplementator(mockClients), cfg
+				return mockClients, cfg
 			},
 			ExpectedResult: validIssues,
 		},
@@ -146,7 +147,8 @@ func TestGetIssuesFromLastWorkDay(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
-			impl, cfg := tc.Setup()
+			mockClients, cfg := tc.Setup()
+			impl := InitTestImplementator(mockClients)
 			res, err := impl.GetIssuesFromLastWorkDay(cfg)
 			tc.CheckCase(t, res, err)
 		})
@@ -178,8 +180,8 @@ func TestIssuesToStr(t *testing.T) {
 			FuncArguments: []interface{}{
 				jiraIssues,
 			},
-			Setup: func() (*internal.Implementator, *utils.Config) {
-				return test.InitTestImplementator(test.InitDefaultMockClients(mc)), nil
+			Setup: func() (*test.MockClients, *utils.Config) {
+				return test.InitDefaultMockClients(mc), nil
 			},
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s\n", jiraIssues[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[0].Key), jiraIssues[0].Fields.Summary) +
 				fmt.Sprintf("* [%s](%s) - %s\n", jiraIssues[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[1].Key), jiraIssues[1].Fields.Summary),
@@ -189,10 +191,10 @@ func TestIssuesToStr(t *testing.T) {
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
 			t.Parallel()
-			impl, _ := tc.Setup()
+			mockClients, _ := tc.Setup()
+			impl := InitTestImplementator(mockClients)
 			res := impl.IssuesToStr(tc.FuncArguments[0].([]*jira.Issue))
 			tc.CheckCase(t, res, nil)
 		})
 	}
 }
-

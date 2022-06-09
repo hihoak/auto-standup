@@ -3,10 +3,12 @@ package internal
 import (
 	"context"
 	"fmt"
+
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
 )
 
+// IssuesToStr - ...
 func (i *Implementator) IssuesToStr(issues []*jira.Issue) string {
 	strIssues := ""
 	for _, issue := range issues {
@@ -15,6 +17,7 @@ func (i *Implementator) IssuesToStr(issues []*jira.Issue) string {
 	return strIssues
 }
 
+// GetIssuesFromLastWorkDay - ...
 func (i *Implementator) GetIssuesFromLastWorkDay(cfg *utils.Config) ([]*jira.Issue, error) {
 	jql := fmt.Sprintf("updatedDate >= \"-%dd\" AND assignee = %s", cfg.NumberOfDaysForGetTickets, cfg.Username)
 	utils.Log.Debug().Msgf("Searching tickets with following JQL %s", jql)
@@ -26,13 +29,14 @@ func (i *Implementator) GetIssuesFromLastWorkDay(cfg *utils.Config) ([]*jira.Iss
 	utils.Log.Debug().Msgf("Got issues from search with jql '%s', issus: %v", jql, issuesFromLastWorkDay)
 	issuesThatRealWasInWork := make([]*jira.Issue, 0)
 	for idx, issue := range issuesFromLastWorkDay {
-		if i.Filters.FilterIssuesByProject(cfg, &issue) && i.Filters.FilterIssueByActivity(cfg, &issue) {
+		if i.Filters.FilterIssuesByProject(cfg, issue) && i.Filters.FilterIssueByActivity(cfg, issue) {
 			issuesThatRealWasInWork = append(issuesThatRealWasInWork, &issuesFromLastWorkDay[idx])
 		}
 	}
 	return issuesThatRealWasInWork, nil
 }
 
+// FromStrKeysToIssues - ...
 func (i *Implementator) FromStrKeysToIssues(ctx context.Context, issueKeys []string) ([]*jira.Issue, error) {
 	var issues []*jira.Issue
 	for _, key := range issueKeys {

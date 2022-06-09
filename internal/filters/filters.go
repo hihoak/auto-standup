@@ -1,22 +1,25 @@
 package filters
 
 import (
+	"strings"
+
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
-	"strings"
 )
 
-//go:generate mockgen -destination "./mock_filterer.go" -source "./filters.go" -package "filters" Filterers
+//go:generate mockgen -destination "./mocks/mock_filterer.go" -source "./filters.go" -package "mocks" Filterers
 
+// Filterers - ...
 type Filterers interface {
-	FilterIssueByActivity(cfg *utils.Config, issue *jira.Issue) bool
-	FilterIssuesByProject(cfg *utils.Config, issue *jira.Issue) bool
+	FilterIssueByActivity(cfg *utils.Config, issue jira.Issue) bool
+	FilterIssuesByProject(cfg *utils.Config, issue jira.Issue) bool
 }
 
-type Filters struct {}
+// Filters - ...
+type Filters struct{}
 
-
-func (f *Filters) FilterIssueByActivity(cfg *utils.Config, issue *jira.Issue) bool {
+// FilterIssueByActivity - ...
+func (f *Filters) FilterIssueByActivity(cfg *utils.Config, issue jira.Issue) bool {
 	utils.Log.Debug().Msgf("Start FilterIssueByActivity for issue: %v", issue)
 	if issue.Changelog == nil {
 		utils.Log.Debug().Msgf("Changelog is empty")
@@ -64,7 +67,8 @@ func (f *Filters) FilterIssueByActivity(cfg *utils.Config, issue *jira.Issue) bo
 	return false
 }
 
-func (f *Filters) FilterIssuesByProject(cfg *utils.Config, issue *jira.Issue) bool {
+// FilterIssuesByProject - ...
+func (f *Filters) FilterIssuesByProject(cfg *utils.Config, issue jira.Issue) bool {
 	utils.Log.Debug().Msgf("Check that issue not in exclude projects: %v", issue)
 	for _, excludeProject := range cfg.ExcludeJiraProjects {
 		if strings.EqualFold(utils.GetProjectFromIssueKey(issue.Key), excludeProject) {

@@ -4,6 +4,6 @@ import (
 	"github.com/hihoak/auto-standup/cmd"
 )
 
-func main()  {
+func main() {
 	cmd.Execute()
 }

@@ -6,6 +6,7 @@ import (
 
 //go:generate mockgen -destination "./mock_jirer.go" -package "jirer" -source "./interface.go" Jirer
 
+// Jirer - interface for JiraClient
 type Jirer interface {
 	SearchIssue(jql string, options *jira.SearchOptions) ([]jira.Issue, *jira.Response, error)
 	GetIssue(key string, options *jira.GetQueryOptions) (*jira.Issue, *jira.Response, error)
