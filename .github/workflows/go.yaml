@@ -48,6 +48,7 @@ jobs:
         run: |
           go test -v ./... -race -covermode=atomic -coverprofile=${COVERAGE_OUTPUT_FILE}
           go tool cover -func=${COVERAGE_OUTPUT_FILE} -o=${COVERAGE_OUTPUT_FILE}
+          echo "coverage is: " && cat ${COVERAGE_OUTPUT_FILE}
 
       - uses: codecov/codecov-action@v2
         with:
