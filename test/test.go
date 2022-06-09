@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/hihoak/auto-standup/internal/clients/jirer"
+	jirer_mocks "github.com/hihoak/auto-standup/internal/clients/jirer/mocks"
 	"github.com/hihoak/auto-standup/internal/filters/mocks"
 	"github.com/hihoak/auto-standup/pkg/utils"
 	"github.com/stretchr/testify/require"
@@ -26,7 +26,7 @@ type (
 
 	// MockClients - ...
 	MockClients struct {
-		JiraMockClient *jirer.MockJirer
+		JiraMockClient *jirer_mocks.MockJirer
 		FiltersMock    *mocks.MockFilterers
 	}
 )
@@ -34,7 +34,7 @@ type (
 // InitDefaultMockClients - .,,
 func InitDefaultMockClients(mc *gomock.Controller) *MockClients {
 	return &MockClients{
-		JiraMockClient: jirer.NewMockJirer(mc),
+		JiraMockClient: jirer_mocks.NewMockJirer(mc),
 		FiltersMock:    mocks.NewMockFilterers(mc),
 	}
 }

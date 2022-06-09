@@ -4,7 +4,7 @@ import (
 	"github.com/andygrunwald/go-jira"
 )
 
-//go:generate mockgen -destination "./mock_jirer.go" -package "jirer" -source "./interface.go" Jirer
+//go:generate mockgen -destination "./mocks/mock_jirer.go" -package "mocks" -source "./interface.go" Jirer
 
 // Jirer - interface for JiraClient
 type Jirer interface {
