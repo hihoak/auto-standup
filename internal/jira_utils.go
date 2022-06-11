@@ -3,18 +3,88 @@ package internal
 import (
 	"context"
 	"fmt"
-
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
+	"strings"
 )
 
-// IssuesToStr - ...
-func (i *Implementator) IssuesToStr(issues []*jira.Issue) string {
+// DoneIssuesToReport - ...
+func (i *Implementator) DoneIssuesToReport(cfg *utils.Config, issues []*jira.Issue, addLogTime bool) string {
 	strIssues := ""
+	totalLogTime := 0
 	for _, issue := range issues {
-		strIssues += fmt.Sprintf("* [%s](%s) - %s\n", issue.Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", issue.Key), issue.Fields.Summary)
+		strIssues += fmt.Sprintf("* [%s](%s) - %s", issue.Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", issue.Key), issue.Fields.Summary)
+		if addLogTime {
+			issueLogTime := i.JiraClient.GetIssueLogTimeForTheLastWorkDay(cfg, *issue)
+			totalLogTime += issueLogTime
+			strLoggedTime := i.ConvertSecToJiraFormat(issueLogTime)
+			if strLoggedTime == "" {
+				strLoggedTime = "no time"
+			}
+			strIssues += fmt.Sprintf(" [log: %s]", strLoggedTime)
+		}
+		strIssues += "\n"
+	}
+	if addLogTime {
+		strTotalLogTime := i.ConvertSecToJiraFormat(totalLogTime)
+		if strTotalLogTime != "" {
+			strIssues += fmt.Sprintf("*Суммарно залогировано времени: %s*", strTotalLogTime)
+		}
 	}
 	return strIssues
+}
+
+// TodoIssuesToReport - ...
+func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addRemainingTime bool) string {
+	strIssues := ""
+	totalTime := 0
+	for _, issue := range issues {
+		strIssues += fmt.Sprintf("* [%s](%s) - %s", issue.Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", issue.Key), issue.Fields.Summary)
+		if addRemainingTime {
+			totalTime += issue.Fields.TimeEstimate
+			estimateTime := i.ConvertSecToJiraFormat(issue.Fields.TimeEstimate)
+			if estimateTime == "" {
+				estimateTime = "no estimate"
+			}
+			strIssues += fmt.Sprintf(" [%s]", estimateTime)
+		}
+		strIssues += "\n"
+	}
+	if addRemainingTime {
+		totalEstimateTime := i.ConvertSecToJiraFormat(totalTime)
+		if totalEstimateTime != "" {
+			strIssues += fmt.Sprintf("*Суммарно запланировано времени: %s*", totalEstimateTime)
+		}
+	}
+	return strIssues
+}
+
+func (i *Implementator) ConvertSecToJiraFormat(sec int) string {
+	weeks := sec / 60 / 60 / 24 / 7
+	sec -= weeks * (60 * 60 * 24 * 7)
+	days := sec / 60 / 60 / 24
+	sec -= days * (60 * 60 * 24)
+	hours := sec / 60 / 60
+	sec -= hours * (60 * 60)
+	minutes := sec / 60
+	sec -= minutes * 60
+
+	resultString := ""
+	if weeks != 0 {
+		resultString += fmt.Sprintf("%dw", weeks)
+	}
+	if days != 0 {
+		resultString += fmt.Sprintf(" %dd", days)
+	}
+	if hours != 0 {
+		resultString += fmt.Sprintf(" %dh", hours)
+	}
+	if minutes != 0 {
+		resultString += fmt.Sprintf(" %dm", minutes)
+	}
+	if sec != 0 {resultString += fmt.Sprintf(" %ds", sec)
+	}
+	return strings.TrimSpace(resultString)
 }
 
 // GetIssuesFromLastWorkDay - ...

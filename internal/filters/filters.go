@@ -59,6 +59,7 @@ func (f *Filters) FilterIssueByActivity(cfg *utils.Config, issue jira.Issue) boo
 		return false
 	}
 
+	historyTimeCreation = historyTimeCreation.UTC()
 	if startTime.Before(historyTimeCreation) && endTime.After(historyTimeCreation) {
 		utils.Log.Debug().Msgf("Issues %s is valid, add it to report", issue.Key)
 		return true

@@ -2,9 +2,9 @@ package jirer
 
 import (
 	"fmt"
-
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
+	"time"
 )
 
 // Client - Jira Client
@@ -44,4 +44,22 @@ func (j *Client) SearchIssue(jql string, options *jira.SearchOptions) ([]jira.Is
 	issues, resp, err := j.Client.Issue.Search(jql, options)
 	utils.Log.Debug().Msgf("Result of SearchIssue: %v", issues)
 	return issues, resp, err
+}
+
+// GetIssueLogTimeForTheLastWorkDay - ...
+func (j *Client) GetIssueLogTimeForTheLastWorkDay(cfg *utils.Config, issue jira.Issue) int {
+	startTime := cfg.CmdStartTime.AddDate(0, 0, -cfg.NumberOfDaysForGetTickets)
+	endTime := cfg.CmdStartTime
+	totalLogTimeForLastWorkDay := 0
+	if issue.Fields.Worklog == nil || issue.Fields.Worklog.Worklogs == nil {
+		utils.Log.Debug().Msgf("Empty worklog of ticket %v", issue)
+		return 0
+	}
+	for _, worklog := range issue.Fields.Worklog.Worklogs {
+		logTime := time.Time(*worklog.Created).UTC()
+		if startTime.Before(logTime) && endTime.After(logTime) {
+			totalLogTimeForLastWorkDay += worklog.TimeSpentSeconds
+		}
+	}
+	return totalLogTimeForLastWorkDay
 }

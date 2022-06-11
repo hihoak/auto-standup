@@ -73,7 +73,6 @@ func TestFilterIssuesByProject(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
-			t.Parallel()
 			cl := Filters{}
 			res := cl.FilterIssuesByProject(cfg, tc.FuncArguments[0].(jira.Issue))
 			tc.CheckCase(t, res, nil)
@@ -93,6 +92,9 @@ func TestFilterIssueByActivity(t *testing.T) {
 		"2000-03-05T22:30:00.000+0000",
 		"2000-03-06T06:30:00.000+0000",
 		"2000-03-06T11:59:00.000+0000",
+	}
+	invalidTimes := []string{
+		"2000-03-04T14:30:00.000+0000",
 	}
 
 	cfg := &utils.Config{
@@ -164,6 +166,29 @@ func TestFilterIssueByActivity(t *testing.T) {
 			ExpectedResult: false,
 		},
 		{
+			Name: "False. Issue doesn't contains valid history. Have Histories, found from valid user, but can't parse time",
+			FuncArguments: []interface{}{
+				jira.Issue{
+					Changelog: &jira.Changelog{
+						Histories: []jira.ChangelogHistory{
+							{
+								Author: jira.User{
+									Name: validUser,
+								},
+								Created: "wrong time",
+							},
+							{
+								Author: jira.User{
+									Name: "another not valid user",
+								},
+							},
+						},
+					},
+				},
+			},
+			ExpectedResult: false,
+		},
+		{
 			Name: "False. Issue doesn't contains valid history. Have Histories, found from valid user, but time is expired",
 			FuncArguments: []interface{}{
 				jira.Issue{
@@ -173,7 +198,7 @@ func TestFilterIssueByActivity(t *testing.T) {
 								Author: jira.User{
 									Name: validUser,
 								},
-								Created: cmdStartTime.AddDate(0, 0, 7).Format(time.RFC3339),
+								Created: invalidTimes[0],
 							},
 							{
 								Author: jira.User{
@@ -262,7 +287,6 @@ func TestFilterIssueByActivity(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
-			t.Parallel()
 			cl := Filters{}
 			res := cl.FilterIssueByActivity(cfg, tc.FuncArguments[0].(jira.Issue))
 			tc.CheckCase(t, res, nil)

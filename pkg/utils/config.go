@@ -21,6 +21,8 @@ type Config struct {
 	Username string `yaml:"username"`
 	// Password - Jira password for authentication
 	Password string `yaml:"password"`
+	// IncludeEstimatedTime - If 'true' includes Estimate time to report, also it can be passed in command via '--time' flag
+	IncludeEstimatedTime bool `yaml:"include_estimated_time" default:"false"`
 	// EligibleUsersHistories - updates from these users are considered valid when finding tickets from the last business day
 	EligibleUsersHistories []string `yaml:"eligible_users_histories" default:"gitlab"`
 	// ExcludeJiraProjects - Jira projects that tickets will be ignore while creating report

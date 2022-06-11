@@ -20,6 +20,8 @@ username: admin
 password: Mysecuresuperadminpass!
 
 # Необязательные параметры
+# Параметр, который добавит в отчет estimated time каждого тикета и так же суммарное кол-во запланированного времени. Может быть подключен через флаг --time команды
+# include_estimated_time: false # default false
 # Параметр, в котором задаются пользователи, чья активность засчитывается при авто-нахождении тикетов за прошедший рабочий день (указывай username через запятую без пробелов)
 # eligible_users_histories: gitlab # default "gitlab,{.username}"
 # Параметр, в котором можно указать проекты в Jira, тикеты из этих проектов не будут включены в отчет
@@ -35,14 +37,15 @@ password: Mysecuresuperadminpass!
 
 4. Пример работы программы
 ```text
-Что вы делали с прошлого опроса?
+**Что вы делали с прошлого опроса?**
 * [RE-6862](https://jira.example.com/browse/RE-6862) - Сделать прикольную фичу
 * [RE-6760](https://jira.example.com/browse/RE-6760) - Продумать архитектурное решение
 * [RE-5977](https://jira.example.com/browse/RE-5977) -  Зачинить баг в программе
-
-Что вы будете делать до следующего опроса?
-* [RE-1000](https://jira.example.com/browse/RE-1000) - Сделать программку автоматизации отчета
-* [RE-2000](https://jira.example.com/browse/RE-2000) - Протестировать программку)
+**Что вы будете делать до следующего опроса?**
+* [RE-1000](https://jira.example.com/browse/RE-1000) - Проблема с выкачиванием image из registry [no estimate]
+* [RE-2000](https://jira.example.com/browse/RE-2000) - Корневой базовый образ [no estimate]
+* [RETEST-528](https://jira.example.comru/browse/RETEST-528) - for test [3h 20m]
+*Суммарно запланировано времени: 3h 20m*
 ```
 
 ## Контакты и полезные ссылки
