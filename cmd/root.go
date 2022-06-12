@@ -61,7 +61,7 @@ func initConfig() {
 		homeDirectory, _ := os.LookupEnv("HOME")
 		configPath = homeDirectory + "/.standup.yaml"
 	}
-	utils.Cfg, err = utils.NewConfig(configPath)
+	utils.Cfg, err = utils.NewConfig(configPath, addEstimatedTime, addLogTime)
 	if err != nil {
 		utils.Log.Fatal().Err(err).Msg("failed to init config. Create it in $HOME/.standup.yaml or supply flags")
 		return

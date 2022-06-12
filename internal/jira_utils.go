@@ -35,12 +35,12 @@ func (i *Implementator) DoneIssuesToReport(cfg *utils.Config, issues []*jira.Iss
 }
 
 // TodoIssuesToReport - ...
-func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addRemainingTime bool) string {
+func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addEstimatedTime bool) string {
 	strIssues := ""
 	totalTime := 0
 	for _, issue := range issues {
 		strIssues += fmt.Sprintf("* [%s](%s) - %s", issue.Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", issue.Key), issue.Fields.Summary)
-		if addRemainingTime {
+		if addEstimatedTime {
 			totalTime += issue.Fields.TimeEstimate
 			estimateTime := i.ConvertSecToJiraFormat(issue.Fields.TimeEstimate)
 			if estimateTime == "" {
@@ -50,7 +50,7 @@ func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addRemainingTim
 		}
 		strIssues += "\n"
 	}
-	if addRemainingTime {
+	if addEstimatedTime {
 		totalEstimateTime := i.ConvertSecToJiraFormat(totalTime)
 		if totalEstimateTime != "" {
 			strIssues += fmt.Sprintf("*Суммарно запланировано времени: %s*", totalEstimateTime)

@@ -21,8 +21,10 @@ type Config struct {
 	Username string `yaml:"username"`
 	// Password - Jira password for authentication
 	Password string `yaml:"password"`
-	// IncludeEstimatedTime - If 'true' includes Estimate time to report, also it can be passed in command via '--time' flag
+	// IncludeEstimatedTime - If 'true' includes Estimate time to report, also it can be passed in command via 'estimated-time' flag
 	IncludeEstimatedTime bool `yaml:"include_estimated_time" default:"false"`
+	// IncludeLoggedTime - If 'true' includes Logged time to report, also it can be passed in command via 'log-time' flag
+	IncludeLoggedTime bool `yaml:"include_logged_time" default:"false"`
 	// EligibleUsersHistories - updates from these users are considered valid when finding tickets from the last business day
 	EligibleUsersHistories []string `yaml:"eligible_users_histories" default:"gitlab"`
 	// ExcludeJiraProjects - Jira projects that tickets will be ignore while creating report
@@ -35,7 +37,7 @@ type Config struct {
 }
 
 // NewConfig - ...
-func NewConfig(path string) (*Config, error) {
+func NewConfig(path string, addEstimatedTime, addLogTime bool) (*Config, error) {
 	file, err := ioutil.ReadFile(filepath.Clean(path))
 	if err != nil {
 		Log.Debug().Err(err).Msgf("Can't open file %s", path)
@@ -45,6 +47,8 @@ func NewConfig(path string) (*Config, error) {
 	cfg := Config{
 		CmdStartTime:              nowTime,
 		NumberOfDaysForGetTickets: getNumberOfDaysForGetTickets(nowTime),
+		IncludeLoggedTime: addLogTime,
+		IncludeEstimatedTime: addEstimatedTime,
 	}
 	err = yaml.Unmarshal(file, &cfg)
 	if err != nil {

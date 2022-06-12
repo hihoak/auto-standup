@@ -12,7 +12,7 @@ import (
 var (
 	doneTickets []string
 	toDoTickets []string
-	addRemainingTime bool
+	addEstimatedTime bool
 	addLogTime bool
 
 	createCmd = &cobra.Command{
@@ -25,7 +25,7 @@ var (
 func init() {
 	createCmd.PersistentFlags().StringSliceVarP(&doneTickets, "done", "d", []string{}, "enter tasks that was done before previous survey")
 	createCmd.PersistentFlags().StringSliceVarP(&toDoTickets, "to-do", "t", []string{}, "enter tasks that you plan to do before the next survey")
-	createCmd.PersistentFlags().BoolVar(&addRemainingTime, "remaining-time", false, "add if you want include remaining time of each ticket to your report")
+	createCmd.PersistentFlags().BoolVar(&addEstimatedTime, "estimated-time", false, "add if you want include estimated time of each ticket to your report")
 	createCmd.PersistentFlags().BoolVar(&addLogTime, "log-time", false, "add if you want include log time to 'done' issues for last work day")
 	rootCmd.AddCommand(createCmd)
 }
@@ -63,7 +63,7 @@ func create(_ *cobra.Command, _ []string) {
 	if err != nil {
 		utils.Log.Fatal().Err(err).Msg("failed to get TODO issues from jira")
 	}
-	toDoTasksString := impl.TodoIssuesToReport(toDoIssues, addRemainingTime)
+	toDoTasksString := impl.TodoIssuesToReport(toDoIssues, addEstimatedTime)
 	if err != nil {
 		utils.Log.Fatal().Err(err).Msg("got error while trying to get 'ToDo' tasks report")
 	}
