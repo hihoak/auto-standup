@@ -20,8 +20,10 @@ username: admin
 password: Mysecuresuperadminpass!
 
 # Необязательные параметры
-# Параметр, который добавит в отчет estimated time каждого тикета и так же суммарное кол-во запланированного времени. Может быть подключен через флаг --time команды
-# include_estimated_time: false # default false
+# Параметр, который добавит в отчет estimated time каждого тикета и так же суммарное кол-во запланированного времени. Может быть подключен через флаг --estimated-time команды
+# include_estimated_time: true # default false
+# Параметр, который добавит в отчет сумму залогированного времени за прошедший рабочий день. Так же может быть добавлен подключен через флаг --log-time команды
+# include_logged_time: true # default false
 # Параметр, в котором задаются пользователи, чья активность засчитывается при авто-нахождении тикетов за прошедший рабочий день (указывай username через запятую без пробелов)
 # eligible_users_histories: gitlab # default "gitlab,{.username}"
 # Параметр, в котором можно указать проекты в Jira, тикеты из этих проектов не будут включены в отчет
@@ -36,11 +38,15 @@ password: Mysecuresuperadminpass!
 Минимум автоматизации. С помощью флага `-d` перечисляем сделанные тикеты
 
 4. Пример работы программы
+```bash
+auto-standup create --log-time --estimated-time -t "RE-1000,RE-2000,RETEST-528"
+```
 ```text
 **Что вы делали с прошлого опроса?**
-* [RE-6862](https://jira.example.com/browse/RE-6862) - Сделать прикольную фичу
-* [RE-6760](https://jira.example.com/browse/RE-6760) - Продумать архитектурное решение
-* [RE-5977](https://jira.example.com/browse/RE-5977) -  Зачинить баг в программе
+* [RE-6862](https://jira.example.com/browse/RE-6862) - Сделать прикольную фичу [log: 4h]
+* [RE-6760](https://jira.example.com/browse/RE-6760) - Продумать архитектурное решение [log: 2h]
+* [RE-5977](https://jira.example.com/browse/RE-5977) -  Зачинить баг в программе [log: 30m]
+*Суммарно залогировано времени: 6h 30m*
 **Что вы будете делать до следующего опроса?**
 * [RE-1000](https://jira.example.com/browse/RE-1000) - Проблема с выкачиванием image из registry [no estimate]
 * [RE-2000](https://jira.example.com/browse/RE-2000) - Корневой базовый образ [no estimate]
