@@ -199,6 +199,10 @@ func TestTodoIssuesToReport(t *testing.T) {
 		},
 	}
 
+	setupFunc := func() (*test.MockClients, *utils.Config) {
+		return test.InitDefaultMockClients(mc), &utils.Config{}
+	}
+
 	cases := []test.Case{
 		{
 			Name: "Just convert",
@@ -206,9 +210,7 @@ func TestTodoIssuesToReport(t *testing.T) {
 				jiraIssues,
 				false,
 			},
-			Setup: func() (*test.MockClients, *utils.Config) {
-				return test.InitDefaultMockClients(mc), nil
-			},
+			Setup: setupFunc,
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s\n", jiraIssues[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[0].Key), jiraIssues[0].Fields.Summary) +
 				fmt.Sprintf("* [%s](%s) - %s\n", jiraIssues[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[1].Key), jiraIssues[1].Fields.Summary),
 		},
@@ -218,9 +220,7 @@ func TestTodoIssuesToReport(t *testing.T) {
 				jiraIssuesForEstimateCase,
 				true,
 			},
-			Setup: func() (*test.MockClients, *utils.Config) {
-				return test.InitDefaultMockClients(mc), nil
-			},
+			Setup: setupFunc,
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s", jiraIssuesForEstimateCase[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssuesForEstimateCase[0].Key), jiraIssuesForEstimateCase[0].Fields.Summary) + " [2h 30m]\n" +
 				fmt.Sprintf("* [%s](%s) - %s", jiraIssuesForEstimateCase[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssuesForEstimateCase[1].Key), jiraIssuesForEstimateCase[1].Fields.Summary) + " [1w 1d 1h 1m 5s]\n" +
 				fmt.Sprintf("* [%s](%s) - %s", jiraIssuesForEstimateCase[2].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssuesForEstimateCase[2].Key), jiraIssuesForEstimateCase[2].Fields.Summary) + " [no estimate]\n" +
@@ -232,9 +232,7 @@ func TestTodoIssuesToReport(t *testing.T) {
 				jiraIssues,
 				true,
 			},
-			Setup: func() (*test.MockClients, *utils.Config) {
-				return test.InitDefaultMockClients(mc), nil
-			},
+			Setup: setupFunc,
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s", jiraIssues[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[0].Key), jiraIssues[0].Fields.Summary) + " [no estimate]\n" +
 				fmt.Sprintf("* [%s](%s) - %s", jiraIssues[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[1].Key), jiraIssues[1].Fields.Summary) + " [no estimate]\n",
 		},
@@ -242,9 +240,10 @@ func TestTodoIssuesToReport(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.Name, func(t *testing.T) {
-			mockClients, _ := tc.Setup()
+			mockClients, testCfg := tc.Setup()
 			impl := InitTestImplementator(mockClients)
-			res := impl.TodoIssuesToReport(tc.FuncArguments[0].([]*jira.Issue), tc.FuncArguments[1].(bool))
+			testCfg.IncludeEstimatedTime = tc.FuncArguments[1].(bool)
+			res := impl.TodoIssuesToReport(testCfg, tc.FuncArguments[0].([]*jira.Issue))
 			tc.CheckCase(t, res, nil)
 		})
 	}
@@ -322,7 +321,7 @@ func TestDoneIssuesToReport(t *testing.T) {
 				false,
 			},
 			Setup: func() (*test.MockClients, *utils.Config) {
-				return test.InitDefaultMockClients(mc), nil
+				return test.InitDefaultMockClients(mc), &utils.Config{}
 			},
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s\n", jiraIssues[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[0].Key), jiraIssues[0].Fields.Summary) +
 				fmt.Sprintf("* [%s](%s) - %s\n", jiraIssues[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[1].Key), jiraIssues[1].Fields.Summary),
@@ -339,7 +338,7 @@ func TestDoneIssuesToReport(t *testing.T) {
 					mocks.JiraMockClient.EXPECT().GetIssueLogTimeForTheLastWorkDay(gomock.Any(), gomock.Any()).
 						Return(issue.Fields.Worklog.Worklogs[0].TimeSpentSeconds)
 				}
-				return mocks, nil
+				return mocks, &utils.Config{}
 			},
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s", jiraIssuesForEstimateCase[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssuesForEstimateCase[0].Key), jiraIssuesForEstimateCase[0].Fields.Summary) + " [log: 2h 30m]\n" +
 				fmt.Sprintf("* [%s](%s) - %s", jiraIssuesForEstimateCase[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssuesForEstimateCase[1].Key), jiraIssuesForEstimateCase[1].Fields.Summary) + " [log: 1w 1d 1h 1m 5s]\n" +
@@ -358,7 +357,7 @@ func TestDoneIssuesToReport(t *testing.T) {
 					mocks.JiraMockClient.EXPECT().GetIssueLogTimeForTheLastWorkDay(gomock.Any(), gomock.Any()).
 						Return(0)
 				}
-				return mocks, nil
+				return mocks, &utils.Config{}
 			},
 			ExpectedResult: fmt.Sprintf("* [%s](%s) - %s", jiraIssues[0].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[0].Key), jiraIssues[0].Fields.Summary) + " [log: no time]\n" +
 				fmt.Sprintf("* [%s](%s) - %s", jiraIssues[1].Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", jiraIssues[1].Key), jiraIssues[1].Fields.Summary) + " [log: no time]\n",
@@ -369,7 +368,8 @@ func TestDoneIssuesToReport(t *testing.T) {
 		t.Run(tc.Name, func(t *testing.T) {
 			mockClients, cfg := tc.Setup()
 			impl := InitTestImplementator(mockClients)
-			res := impl.DoneIssuesToReport(cfg, tc.FuncArguments[0].([]*jira.Issue), tc.FuncArguments[1].(bool))
+			cfg.IncludeLoggedTime = tc.FuncArguments[1].(bool)
+			res := impl.DoneIssuesToReport(cfg, tc.FuncArguments[0].([]*jira.Issue))
 			tc.CheckCase(t, res, nil)
 		})
 	}
@@ -386,47 +386,47 @@ func TestConvertSecToJiraFormat(t *testing.T) {
 	cases := []test.Case{
 		{
 			Name: "Full time format",
-			FuncArguments:[]interface{}{
+			FuncArguments: []interface{}{
 				// 6w + 5d + 3h + 10m + 50s
 				3628800 + 432000 + 10800 + 600 + 50,
 			},
-			Setup: setupFunc,
+			Setup:          setupFunc,
 			ExpectedResult: "6w 5d 3h 10m 50s",
 		},
 		{
 			Name: "Without hours",
-			FuncArguments:[]interface{}{
+			FuncArguments: []interface{}{
 				// 6w + 5d + 10m + 50s
 				3628800 + 432000 + 600 + 50,
 			},
-			Setup: setupFunc,
+			Setup:          setupFunc,
 			ExpectedResult: "6w 5d 10m 50s",
 		},
 		{
 			Name: "Without weeks, hours",
-			FuncArguments:[]interface{}{
+			FuncArguments: []interface{}{
 				// 5d + 10m + 50s
 				432000 + 600 + 50,
 			},
-			Setup: setupFunc,
+			Setup:          setupFunc,
 			ExpectedResult: "5d 10m 50s",
 		},
 		{
 			Name: "Only minutes and seconds",
-			FuncArguments:[]interface{}{
+			FuncArguments: []interface{}{
 				// 10m + 50s
 				600 + 50,
 			},
-			Setup: setupFunc,
+			Setup:          setupFunc,
 			ExpectedResult: "10m 50s",
 		},
 		{
 			Name: "Empty case",
-			FuncArguments:[]interface{}{
+			FuncArguments: []interface{}{
 				// empty string
 				0,
 			},
-			Setup: setupFunc,
+			Setup:          setupFunc,
 			ExpectedResult: "",
 		},
 	}

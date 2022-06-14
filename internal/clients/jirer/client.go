@@ -2,9 +2,10 @@ package jirer
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
-	"time"
 )
 
 // Client - Jira Client

@@ -12,7 +12,7 @@ import (
 
 var (
 	// Cfg ...
-	Cfg *Config
+	Cfg = &Config{}
 )
 
 // Config - ...
@@ -22,9 +22,9 @@ type Config struct {
 	// Password - Jira password for authentication
 	Password string `yaml:"password"`
 	// IncludeEstimatedTime - If 'true' includes Estimate time to report, also it can be passed in command via 'estimated-time' flag
-	IncludeEstimatedTime bool `yaml:"include_estimated_time" default:"false"`
+	IncludeEstimatedTime bool `yaml:"include_estimated_time"`
 	// IncludeLoggedTime - If 'true' includes Logged time to report, also it can be passed in command via 'log-time' flag
-	IncludeLoggedTime bool `yaml:"include_logged_time" default:"false"`
+	IncludeLoggedTime bool `yaml:"include_logged_time"`
 	// EligibleUsersHistories - updates from these users are considered valid when finding tickets from the last business day
 	EligibleUsersHistories []string `yaml:"eligible_users_histories" default:"gitlab"`
 	// ExcludeJiraProjects - Jira projects that tickets will be ignore while creating report
@@ -47,8 +47,8 @@ func NewConfig(path string, addEstimatedTime, addLogTime bool) (*Config, error) 
 	cfg := Config{
 		CmdStartTime:              nowTime,
 		NumberOfDaysForGetTickets: getNumberOfDaysForGetTickets(nowTime),
-		IncludeLoggedTime: addLogTime,
-		IncludeEstimatedTime: addEstimatedTime,
+		IncludeLoggedTime:         addLogTime,
+		IncludeEstimatedTime:      addEstimatedTime,
 	}
 	err = yaml.Unmarshal(file, &cfg)
 	if err != nil {

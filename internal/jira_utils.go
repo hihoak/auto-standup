@@ -3,18 +3,19 @@ package internal
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
-	"strings"
 )
 
 // DoneIssuesToReport - ...
-func (i *Implementator) DoneIssuesToReport(cfg *utils.Config, issues []*jira.Issue, addLogTime bool) string {
+func (i *Implementator) DoneIssuesToReport(cfg *utils.Config, issues []*jira.Issue) string {
 	strIssues := ""
 	totalLogTime := 0
 	for _, issue := range issues {
 		strIssues += fmt.Sprintf("* [%s](%s) - %s", issue.Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", issue.Key), issue.Fields.Summary)
-		if addLogTime {
+		if cfg.IncludeLoggedTime {
 			issueLogTime := i.JiraClient.GetIssueLogTimeForTheLastWorkDay(cfg, *issue)
 			totalLogTime += issueLogTime
 			strLoggedTime := i.ConvertSecToJiraFormat(issueLogTime)
@@ -25,7 +26,7 @@ func (i *Implementator) DoneIssuesToReport(cfg *utils.Config, issues []*jira.Iss
 		}
 		strIssues += "\n"
 	}
-	if addLogTime {
+	if cfg.IncludeLoggedTime {
 		strTotalLogTime := i.ConvertSecToJiraFormat(totalLogTime)
 		if strTotalLogTime != "" {
 			strIssues += fmt.Sprintf("*Суммарно залогировано времени: %s*", strTotalLogTime)
@@ -35,12 +36,12 @@ func (i *Implementator) DoneIssuesToReport(cfg *utils.Config, issues []*jira.Iss
 }
 
 // TodoIssuesToReport - ...
-func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addEstimatedTime bool) string {
+func (i *Implementator) TodoIssuesToReport(cfg *utils.Config, issues []*jira.Issue) string {
 	strIssues := ""
 	totalTime := 0
 	for _, issue := range issues {
 		strIssues += fmt.Sprintf("* [%s](%s) - %s", issue.Key, fmt.Sprintf("https://jit.ozon.ru/browse/%s", issue.Key), issue.Fields.Summary)
-		if addEstimatedTime {
+		if cfg.IncludeEstimatedTime {
 			totalTime += issue.Fields.TimeEstimate
 			estimateTime := i.ConvertSecToJiraFormat(issue.Fields.TimeEstimate)
 			if estimateTime == "" {
@@ -50,7 +51,7 @@ func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addEstimatedTim
 		}
 		strIssues += "\n"
 	}
-	if addEstimatedTime {
+	if cfg.IncludeEstimatedTime {
 		totalEstimateTime := i.ConvertSecToJiraFormat(totalTime)
 		if totalEstimateTime != "" {
 			strIssues += fmt.Sprintf("*Суммарно запланировано времени: %s*", totalEstimateTime)
@@ -59,6 +60,7 @@ func (i *Implementator) TodoIssuesToReport(issues []*jira.Issue, addEstimatedTim
 	return strIssues
 }
 
+// ConvertSecToJiraFormat - ...
 func (i *Implementator) ConvertSecToJiraFormat(sec int) string {
 	weeks := sec / 60 / 60 / 24 / 7
 	sec -= weeks * (60 * 60 * 24 * 7)
@@ -82,7 +84,8 @@ func (i *Implementator) ConvertSecToJiraFormat(sec int) string {
 	if minutes != 0 {
 		resultString += fmt.Sprintf(" %dm", minutes)
 	}
-	if sec != 0 {resultString += fmt.Sprintf(" %ds", sec)
+	if sec != 0 {
+		resultString += fmt.Sprintf(" %ds", sec)
 	}
 	return strings.TrimSpace(resultString)
 }
@@ -91,7 +94,10 @@ func (i *Implementator) ConvertSecToJiraFormat(sec int) string {
 func (i *Implementator) GetIssuesFromLastWorkDay(cfg *utils.Config) ([]*jira.Issue, error) {
 	jql := fmt.Sprintf("updatedDate >= \"-%dd\" AND assignee = %s", cfg.NumberOfDaysForGetTickets, cfg.Username)
 	utils.Log.Debug().Msgf("Searching tickets with following JQL %s", jql)
-	issuesFromLastWorkDay, _, err := i.JiraClient.SearchIssue(jql, &jira.SearchOptions{Expand: "changelog"})
+	issuesFromLastWorkDay, _, err := i.JiraClient.SearchIssue(jql, &jira.SearchOptions{
+		Expand: "changelog",
+		Fields: []string{"worklog", "time_estimate"},
+	})
 	if err != nil {
 		utils.Log.Debug().Err(err).Msg("Can't get issues from search")
 		return nil, err

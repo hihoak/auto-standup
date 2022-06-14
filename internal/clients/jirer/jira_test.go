@@ -1,11 +1,12 @@
 package jirer
 
 import (
+	"testing"
+	"time"
+
 	"github.com/andygrunwald/go-jira"
 	"github.com/hihoak/auto-standup/pkg/utils"
 	"github.com/hihoak/auto-standup/test"
-	"testing"
-	"time"
 )
 
 func TestGetIssueLogTimeForTheLastWorkDay(t *testing.T) {
@@ -65,7 +66,7 @@ func TestGetIssueLogTimeForTheLastWorkDay(t *testing.T) {
 
 	testCfg := &utils.Config{
 		NumberOfDaysForGetTickets: 1,
-		CmdStartTime: cmdStartTime,
+		CmdStartTime:              cmdStartTime,
 	}
 
 	cases := []test.Case{

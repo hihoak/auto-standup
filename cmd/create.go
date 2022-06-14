@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	doneTickets []string
-	toDoTickets []string
+	doneTickets      []string
+	toDoTickets      []string
 	addEstimatedTime bool
-	addLogTime bool
+	addLogTime       bool
 
 	createCmd = &cobra.Command{
 		Use:   "create --log-level \"info\" --done \"RE-1000,RE-2000\" --todo \"RE-3000,RE-4000\"",
@@ -48,7 +48,7 @@ func create(_ *cobra.Command, _ []string) {
 			utils.Log.Fatal().Err(err).Msg("Failed to get DONE tickets from jira")
 		}
 	}
-	doneTasksString = impl.DoneIssuesToReport(utils.Cfg, doneIssues, addLogTime)
+	doneTasksString = impl.DoneIssuesToReport(utils.Cfg, doneIssues)
 	if err != nil {
 		utils.Log.Fatal().Err(err).Msg("got error while trying to get 'Done' tasks report")
 	}
@@ -63,7 +63,7 @@ func create(_ *cobra.Command, _ []string) {
 	if err != nil {
 		utils.Log.Fatal().Err(err).Msg("failed to get TODO issues from jira")
 	}
-	toDoTasksString := impl.TodoIssuesToReport(toDoIssues, addEstimatedTime)
+	toDoTasksString := impl.TodoIssuesToReport(utils.Cfg, toDoIssues)
 	if err != nil {
 		utils.Log.Fatal().Err(err).Msg("got error while trying to get 'ToDo' tasks report")
 	}
