@@ -96,7 +96,7 @@ func (i *Implementator) GetIssuesFromLastWorkDay(cfg *utils.Config) ([]*jira.Iss
 	utils.Log.Debug().Msgf("Searching tickets with following JQL %s", jql)
 	issuesFromLastWorkDay, _, err := i.JiraClient.SearchIssue(jql, &jira.SearchOptions{
 		Expand: "changelog",
-		Fields: []string{"worklog", "time_estimate"},
+		Fields: []string{"worklog", "time_estimate", "summary"},
 	})
 	if err != nil {
 		utils.Log.Debug().Err(err).Msg("Can't get issues from search")
